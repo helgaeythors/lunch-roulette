@@ -1,7 +1,7 @@
 import React from 'react';
 import Button from '@material-ui/core/Button';
 
-class NewRoomForm extends React.Component {
+class JoinRoomForm extends React.Component {
   constructor(props) {
       super(props);
       this.state = {
@@ -9,9 +9,9 @@ class NewRoomForm extends React.Component {
         username: "",
       };
   }
-  handleCreate = () => {
+  handleJoin = () => {
     const { socket } = this.props;
-    socket.emit('newuser', {/* TODO */}, function(confirmation) {
+    socket.emit('newuser', "NEWPERSON", function(confirmation) {
         if (confirmation) {
             console.log("success!");
         } else {
@@ -22,12 +22,15 @@ class NewRoomForm extends React.Component {
   render() {
     return (
         <>
-            <Button variant="contained" color="secondary" onClick={this.handleCreate}>
-                Newroom
+            <Button variant="contained" color="primary" onClick={this.handleJoin}>
+                Create a room
+            </Button>
+            <Button variant="contained" color="secondary" onClick={this.handleJoin}>
+                Join a room
             </Button>
         </>
     );
   }
 };
 
-export default NewRoomForm;
+export default JoinRoomForm;
