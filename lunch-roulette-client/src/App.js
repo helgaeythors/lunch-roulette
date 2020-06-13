@@ -1,6 +1,6 @@
 import React from 'react';
-import { Switch, Route } from 'react-router-dom';
-import { BrowserRouter } from 'react-router-dom';
+import { Switch, Route, BrowserRouter } from 'react-router-dom';
+import FastfoodOutlinedIcon from '@material-ui/icons/FastfoodOutlined';
 import SocketContext from './context/socketContext';
 import FrontPage from './components/FrontPage/FrontPage';
 import CreateRoom from './components/CreateRoom/CreateRoom';
@@ -13,12 +13,16 @@ class App extends React.Component {
 
         return (
         <div className="App">
+            <div className="App-foodicon-container">
+                <FastfoodOutlinedIcon color="primary" />
+            </div>
             <BrowserRouter>
                 <Switch>
                     <Route exact path="/" render={ (props) => <FrontPage {...props} socket={socket}/> } />
                     <Route exact path="/create" render={ (props) => <CreateRoom {...props} socket={socket} /> } />
                 </Switch>
             </BrowserRouter>
+            
         </div>
         );
     }
