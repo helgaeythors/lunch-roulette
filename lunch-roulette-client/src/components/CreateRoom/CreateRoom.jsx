@@ -1,4 +1,5 @@
 import React from 'react';
+import { Redirect } from 'react-router'
 import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
 import { withStyles} from '@material-ui/core/styles';
@@ -11,19 +12,9 @@ class CreateRoom extends React.Component {
         this.state = {
             username: "",
             usernameError: false,
+            shouldRedirect: false,
+            roomcode: null,
         };
-    }
-    componentDidMount = () => {
-        const { socket } = this.props;
-
-        //let populate = this._populateUserList.bind(this);
-
-        socket.on('updateusers', function(roomcode, userlist, oplist) {
-            // populate()
-            console.log(roomcode);
-            console.log(userlist);
-            console.log(oplist);
-        });
     }
     handleChangeInput = (event) => {
         const { name, value } = event.target;
@@ -35,21 +26,25 @@ class CreateRoom extends React.Component {
         const { username } = this.state;
         const { socket } = this.props;
 
-        const that = this;
-        socket.emit('newuser', username, function(available) {
+        socket.emit('newuser', username, (available) => {
             if (available) {
                 // name avilable
-                that.setState({ usernameError: false });
-                socket.emit('joinroom', undefined);
+                socket.emit('joinroom', undefined, (roomcode) => {
+                    this.setState({ usernameError: false, roomcode: roomcode, shouldRedirect: true });
+                });
             } else {
                 // name not available
-                that.setState({ usernameError: true });
+                this.setState({ usernameError: true });
             }
         });
     }
     render() {
         const { classes } = this.props;
-        const { usernameError } = this.state;
+        const { usernameError, shouldRedirect, roomcode } = this.state;
+
+        if (shouldRedirect) {
+            return <Redirect to={`room/${roomcode}`}/>;
+        }
 
         return (
             <div className="CreateRoom-container">

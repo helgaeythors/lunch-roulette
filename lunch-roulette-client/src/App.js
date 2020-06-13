@@ -4,6 +4,7 @@ import FastfoodOutlinedIcon from '@material-ui/icons/FastfoodOutlined';
 import SocketContext from './context/socketContext';
 import FrontPage from './components/FrontPage/FrontPage';
 import CreateRoom from './components/CreateRoom/CreateRoom';
+import Room from './components/Room/Room';
 import './App.css';
 
 class App extends React.Component {
@@ -20,6 +21,7 @@ class App extends React.Component {
                 <Switch>
                     <Route exact path="/" render={ (props) => <FrontPage {...props} socket={socket}/> } />
                     <Route exact path="/create" render={ (props) => <CreateRoom {...props} socket={socket} /> } />
+                    <Route exact path="/room/:roomId" render={ (props) => <Room {...props} socket={socket} /> } />
                 </Switch>
             </BrowserRouter>
             

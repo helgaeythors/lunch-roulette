@@ -4,6 +4,7 @@
     display: flex;
     flex-grow: 1;
     justify-content: center;
+    align-items: center;
 }
 
 .CreateRoom-form {
@@ -16,5 +17,6 @@
     .CreateRoom-container {
         background-color: #84ffff;
         flex-direction: column;
+        align-items: stretch;
     }
 }

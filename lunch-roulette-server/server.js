@@ -31,17 +31,19 @@ io.on('connection', function (socket) {
     });
 
     // when a user joins the server
-    socket.on('joinroom', function(roomcode) {
+    socket.on('joinroom', function(roomcode, fn) {
         // check if the room does not exists
         if (rooms[roomcode] === undefined) {
             // create a room
             let newRoomCode = shortid.generate();
             rooms[newRoomCode] = new Room(newRoomCode);
             rooms[newRoomCode].ops[socket.username] = socket.username;
+            fn(newRoomCode);
             io.sockets.emit('updateusers', newRoomCode, rooms[newRoomCode].users, rooms[newRoomCode].ops);
         } else {
             // add the user to the room
             rooms[room].addUser(socket.username);
+            fn(roomcode);
             io.sockets.emit('updateusers', roomcode, rooms[roomcode].users, rooms[roomcode].ops);
         }
     });
