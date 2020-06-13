@@ -1,5 +1,6 @@
 import React from 'react';
 import Button from '@material-ui/core/Button';
+import { Link } from 'react-router-dom';
 import { withStyles} from '@material-ui/core/styles';
 import AddCircleIcon from '@material-ui/icons/AddCircle';
 import PersonAddIcon from '@material-ui/icons/PersonAdd';
@@ -13,19 +14,6 @@ const styles = () => ({
 });
 
 class FrontPage extends React.Component {
-    handleCreate = () => {
-        const { socket } = this.props;
-        socket.emit('newuser', "NEWPERSON!", function(confirmation) {
-            if (confirmation) {
-                console.log("success!");
-            } else {
-                console.log("error!");
-            }
-        });
-    }
-    handleJoin = () => {
-        /*  */
-     }
     render() {
         const { classes } = this.props;
 
@@ -36,25 +24,28 @@ class FrontPage extends React.Component {
                         <FastfoodOutlinedIcon color="primary" />
                     </div>
                     <div className="FrontPage-inner-container">
-                        <Button 
-                            variant="contained"
-                            color="primary"
-                            className={classes.buttonMargin}
-                            onClick={this.handleCreate}
-                            startIcon={<AddCircleIcon />}
-                        >
-                            Create a room
-                        </Button>
+                        <Link to="/create">
+                            <Button 
+                                variant="contained"
+                                color="primary"
+                                className={classes.buttonMargin}
+                                startIcon={<AddCircleIcon />}
+                            >
+                                Create a room
+                            </Button>
+                        </Link>
+
+                        <Link to="/join">
+                            <Button 
+                                variant="contained"
+                                color="secondary"
+                                className={classes.buttonMargin}
+                                startIcon={<PersonAddIcon />}
+                            >
+                                Join a room
+                            </Button>
+                        </Link>
                         
-                        <Button 
-                            variant="contained"
-                            color="secondary"
-                            className={classes.buttonMargin}
-                            onClick={this.handleJoin}
-                            startIcon={<PersonAddIcon />}
-                        >
-                            Join a room
-                        </Button>
                     </div>
                 </div>
             </>

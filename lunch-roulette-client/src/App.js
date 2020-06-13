@@ -14,10 +14,10 @@ class App extends React.Component {
         return (
         <div className="App">
             <BrowserRouter>
-            <Switch>
-                <Route exact path="/" render={ (props) => <FrontPage {...props} socket={socket}/> } />
-                <Route exact path="/create" render={ (props) => <CreateRoom {...props} socket={socket} /> } />
-            </Switch>
+                <Switch>
+                    <Route exact path="/" render={ (props) => <FrontPage {...props} socket={socket}/> } />
+                    <Route exact path="/create" render={ (props) => <CreateRoom {...props} socket={socket} /> } />
+                </Switch>
             </BrowserRouter>
         </div>
         );

@@ -23,6 +23,7 @@ class CreateRoom extends React.Component {
 
         return (
             <div className="CreateRoom-container">
+                <p>create room</p>
             </div>
         );
     }
