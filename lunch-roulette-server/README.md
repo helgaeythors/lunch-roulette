@@ -33,3 +33,5 @@ The client should call this when a user joins a romm.
 *Parameters*
 
 rommcode: "the room code of the room to join, , undefined if the user is creating a new room"
+
+The server responds by emitting "updateusers" (to all participants in the room).

@@ -38,22 +38,25 @@ io.on('connection', function (socket) {
             let newRoomCode = shortid.generate();
             rooms[newRoomCode] = new Room(newRoomCode);
             rooms[newRoomCode].ops[socket.username] = socket.username;
+            io.sockets.emit('updateusers', newRoomCode, rooms[newRoomCode].users, rooms[newRoomCode].ops);
         } else {
             // add the user to the room
             rooms[room].addUser(socket.username);
+            io.sockets.emit('updateusers', roomcode, rooms[roomcode].users, rooms[roomcode].ops);
         }
-        io.sockets.emit('updateusers', roomcode, rooms[roomcode].users, rooms[roomcode].ops);
     });
 
 });
 
-// Room class/object.
-function Room(roomcode) {
-    this.roomcode = roomcode;
-    this.users = {};
-    this.ops = {};
-
-    this.addUser = function(user) {
-        (user !== undefined) ? this.users[user] = user : console.log("ERROR: error adding user");
-    };
+// Room class/object
+class Room {
+    constructor(roomcode) {
+        this.roomcode = roomcode;
+        this.users = {};
+        this.ops = {};
+        this.addUser = function (user) {
+            (user !== undefined) ? this.users[user] = user : console.log("ERROR: error adding user");
+        };
+    }
 }
+
