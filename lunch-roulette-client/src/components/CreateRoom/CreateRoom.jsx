@@ -40,7 +40,7 @@ class CreateRoom extends React.Component {
     }
     render() {
         const { classes } = this.props;
-        const { usernameError, shouldRedirect, roomcode } = this.state;
+        const { username, usernameError, shouldRedirect, roomcode } = this.state;
 
         if (shouldRedirect) {
             return <Redirect to={`room/${roomcode}`}/>;
@@ -64,6 +64,7 @@ class CreateRoom extends React.Component {
                             color="primary"
                             className={classes.margin}
                             type="submit"
+                            disabled={username === ""}
                         >
                             Create
                         </Button>

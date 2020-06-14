@@ -16,6 +16,11 @@ class Room extends React.Component {
             this.setState({ roomcode: roomcode, userlist: userlist, oplist: oplist });
         });
     }
+    componentWillUnmount() {
+        const { socket } = this.props;
+
+        socket.off("updateusers");
+    }
     render() {
         const { roomcode } = this.state;
 
