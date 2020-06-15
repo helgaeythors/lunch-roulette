@@ -30,20 +30,25 @@ io.on('connection', function (socket) {
         }
     });
 
-    // when a user joins the server
+    // when a user creates a room
+    socket.on('createroom', function(fn) {
+        // create a room
+        let newRoomCode = shortid.generate();
+        rooms[newRoomCode] = new Room(newRoomCode);
+        rooms[newRoomCode].ops[socket.username] = socket.username;
+        fn(newRoomCode);
+        io.sockets.emit('updateusers', newRoomCode, rooms[newRoomCode].users, rooms[newRoomCode].ops);
+    });
+
+    // when a user joins a room
     socket.on('joinroom', function(roomcode, fn) {
         // check if the room does not exists
         if (rooms[roomcode] === undefined) {
-            // create a room
-            let newRoomCode = shortid.generate();
-            rooms[newRoomCode] = new Room(newRoomCode);
-            rooms[newRoomCode].ops[socket.username] = socket.username;
-            fn(newRoomCode);
-            io.sockets.emit('updateusers', newRoomCode, rooms[newRoomCode].users, rooms[newRoomCode].ops);
+            fn(false);
         } else {
             // add the user to the room
-            rooms[room].addUser(socket.username);
-            fn(roomcode);
+            rooms[roomcode].addUser(socket.username);
+            fn(true);
             io.sockets.emit('updateusers', roomcode, rooms[roomcode].users, rooms[roomcode].ops);
         }
     });

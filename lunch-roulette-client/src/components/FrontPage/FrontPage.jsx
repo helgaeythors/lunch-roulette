@@ -30,7 +30,7 @@ class FrontPage extends React.Component {
                     className={classes.margin}
                     startIcon={<PersonAddIcon />}
                     component={Link}
-                    to="join">
+                    to="/join">
                     Join a room
                 </Button>
                     

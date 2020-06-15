@@ -4,9 +4,9 @@ import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
 import { withStyles} from '@material-ui/core/styles';
 import { styles } from '../../utils/customStyles';
-import './CreateRoom.css';
+import './JoinRoom.css';
 
-class CreateRoom extends React.Component {
+class JoinRoom extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -14,6 +14,7 @@ class CreateRoom extends React.Component {
             usernameError: false,
             shouldRedirect: false,
             roomcode: null,
+            roomcodeError: false,
         };
     }
     handleChangeInput = (event) => {
@@ -27,10 +28,18 @@ class CreateRoom extends React.Component {
         const { socket } = this.props;
 
         socket.emit('newuser', username, (available) => {
+            const { roomcode } = this.state;
+
             if (available) {
                 // name avilable
-                socket.emit('createroom', (roomcode) => {
-                    this.setState({ usernameError: false, roomcode: roomcode, shouldRedirect: true });
+                this.setState({ usernameError: false });
+                socket.emit('joinroom', roomcode, (success) => {
+                    if (success) {
+                        this.setState({ roomcodeError: false, shouldRedirect: true });
+                    }
+                    else {
+                        this.setState({ roomcodeError: true });
+                    }
                 });
             } else {
                 // name not available
@@ -40,10 +49,9 @@ class CreateRoom extends React.Component {
     }
     render() {
         const { classes } = this.props;
-        const { username, usernameError, shouldRedirect, roomcode } = this.state;
+        const { username, usernameError, roomcode, roomcodeError, shouldRedirect } = this.state;
 
         if (shouldRedirect) {
-            //return <Redirect to={`room/${roomcode}`}/>;
             return <Redirect to={{
                 pathname: `room/${roomcode}`,
                 state: { username: username }
@@ -51,13 +59,24 @@ class CreateRoom extends React.Component {
         }
 
         return (
-            <div className="CreateRoom-container">
+            <div className="JoinRoom-container">
                 <form onSubmit={this.handleSubmit}>
-                    <div className="CreateRoom-form">
-                        <TextField id="CreateRoom-textfield"
+                    <div className="JoinRoom-form">
+                        <TextField id="JoinRoom-textfield-roomcode"
+                            name="roomcode"
+                            label="Enter the room code..."
+                            variant="filled"
+                            color="primary"
+                            className={classes.margin}
+                            onChange={this.handleChangeInput}
+                            error={roomcodeError}
+                            helperText={roomcodeError ? "Room not available" : ""}
+                        />
+                        <TextField id="JoinRoom-textfield-username"
                             name="username"
                             label="Enter your name..."
                             variant="filled"
+                            color="primary"
                             className={classes.margin}
                             onChange={this.handleChangeInput}
                             error={usernameError}
@@ -70,7 +89,7 @@ class CreateRoom extends React.Component {
                             type="submit"
                             disabled={username === ""}
                         >
-                            Create
+                            Join
                         </Button>
                     </div>
                 </form>
@@ -79,4 +98,4 @@ class CreateRoom extends React.Component {
     }
 };
 
-export default withStyles(styles)(CreateRoom);
+export default withStyles(styles)(JoinRoom);

@@ -1,21 +1,21 @@
-.CreateRoom-container {
+.JoinRoom-container {
     height: 100%;
-    background-color: #b39ddb;
+    background-color: #84ffff;
     display: flex;
     flex-grow: 1;
     justify-content: center;
     align-items: center;
 }
 
-.CreateRoom-form {
+.JoinRoom-form {
     display: flex;
     flex-direction: column;
 }
 
 /* define differences for mobile */
 @media only screen and (max-width: 600px) {
-    .CreateRoom-container {
-        background-color: #b39ddb;
+    .JoinRoom-container {
+        background-color: #84ffff;
         flex-direction: column;
         align-items: stretch;
     }
