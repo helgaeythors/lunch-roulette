@@ -4,33 +4,36 @@ class Room extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            roomcode: null,
-            userlist: [],
-            oplist: [],
+            // fetch the roomcode from the url parameters
+            roomcode: props.match.params.roomId,
+            ops: [],
+            users: [],
         };
     }
     componentDidMount = () => {
         const { socket } = this.props;
 
-        socket.on('updateusers', (roomcode, userlist, oplist) => {
-            this.setState({ roomcode: roomcode, userlist: userlist, oplist: oplist });
+        // start listening for 'updateusers' events from the server
+        socket.on('updateusers', (roomcode, users, ops) => {
+            this.setState({ roomcode: roomcode, users: users, ops: ops });
         });
+
+        // TODO later: => fetch information from db here
     }
     componentWillUnmount() {
         const { socket } = this.props;
 
+        // stop listening for 'updateusers events from the server
         socket.off("updateusers");
     }
     render() {
-        const { roomcode } = this.state;
-
-        // if the server has not returned the roomcode
-        if (roomcode === null || roomcode === undefined) {
-            return <p>Waiting...</p>;
-        }
+        const { roomcode, users, ops } = this.state;
 
         return (
-            <p>Room Code: {roomcode}</p>
+            <>
+                <p>Room Code: {roomcode}</p>
+                <p>Number of users: {Object.keys(ops).length + Object.keys(users).length}</p>
+            </>
         );
     }
 };
