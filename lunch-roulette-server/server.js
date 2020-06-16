@@ -22,11 +22,13 @@ io.on('connection', function (socket) {
             socket.username = username;
 
             // store user object in global user list
-            users[username] = { username: socket.username, room: {}, socket: this };
-            fn(true); // callback, user name was available
+            users[username] = { username: socket.username, channels: {}, socket: this };
+            // username is available
+            fn(true);
         }
         else {
-            fn(false); // callback, it wasn't available
+             // the username is not available
+            fn(false);
         }
     });
 
@@ -35,7 +37,10 @@ io.on('connection', function (socket) {
         // create a room
         let newRoomCode = shortid.generate();
         rooms[newRoomCode] = new Room(newRoomCode);
+        // op the user
         rooms[newRoomCode].ops[socket.username] = socket.username;
+        // keep track of the room in the user object
+		users[socket.username].channels[newRoomCode] = newRoomCode;
         fn(newRoomCode);
         io.sockets.emit('updateusers', newRoomCode, rooms[newRoomCode].users, rooms[newRoomCode].ops);
     });
@@ -48,8 +53,25 @@ io.on('connection', function (socket) {
         } else {
             // add the user to the room
             rooms[roomcode].addUser(socket.username);
+            // keep track of the room in the user object
+			users[socket.username].channels[roomcode] = roomcode;
             fn(true);
             io.sockets.emit('updateusers', roomcode, rooms[roomcode].users, rooms[roomcode].ops);
+        }
+    });
+
+    // when a user disconnects
+	socket.on('disconnect', function() {
+        // if the client had a username then clean up
+        if (socket.username) {
+            for (var roomcode in users[socket.username].channels) {
+				// remove the user from users or ops lists in the rooms he's registered in
+				delete rooms[roomcode].users[socket.username];
+				delete rooms[roomcode].ops[socket.username];
+				io.sockets.emit('updateusers', roomcode, rooms[roomcode].users, rooms[roomcode].ops);
+			}
+			// remove the user from the global user list
+			delete users[socket.username];
         }
     });
 

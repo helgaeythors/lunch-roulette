@@ -8,6 +8,7 @@ class Room extends React.Component {
         this.state = {
             // fetch the roomcode from the url parameters
             roomcode: props.match.params.roomId,
+            username: this.props.location.state ? this.props.location.state.username : undefined,
             ops: [],
             users: [],
         };
@@ -29,20 +30,27 @@ class Room extends React.Component {
     componentWillUnmount() {
         const { socket } = this.props;
 
-        // stop listening for 'updateusers events from the server
+        // stop listening for 'updateusers' events from the server
         socket.off("updateusers");
     }
     render() {
-        const { roomcode, users, ops } = this.state;
+        const { username, roomcode, users, ops } = this.state;
 
-        // if the location state is not set then the user has not set its username
-        if (!this.props.location.state) {
+        // if the user has not set its username
+        if (!username) {
             return <p>Go to the <Link to="/">front page</Link> to join a room</p>;
+        }
+
+        // if the user has disconnected and is no longer in the room
+        if (ops[username] === undefined && users[username] === undefined) {
+            console.log("disconnected: ");
+            console.log(username);
+            return <p>You have disconnected, go to the <Link to="/">front page</Link> to join a room</p>;
         }
 
         return (
             <>
-                <p>Username: {this.props.location.state.username}</p>
+                <p>Username: {username}</p>
                 <p>Room Code: {roomcode}</p>
                 <p>Number of users: {Object.keys(ops).length + Object.keys(users).length}</p>
             </>
