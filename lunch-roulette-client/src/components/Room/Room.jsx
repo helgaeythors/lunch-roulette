@@ -1,4 +1,6 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
+import './Room.css';
 
 class Room extends React.Component {
     constructor(props) {
@@ -32,6 +34,11 @@ class Room extends React.Component {
     }
     render() {
         const { roomcode, users, ops } = this.state;
+
+        // if the location state is not set then the user has not set its username
+        if (!this.props.location.state) {
+            return <p>Go to the <Link to="/">front page</Link> to join a room</p>;
+        }
 
         return (
             <>

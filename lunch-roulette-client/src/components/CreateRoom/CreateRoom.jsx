@@ -43,7 +43,6 @@ class CreateRoom extends React.Component {
         const { username, usernameError, shouldRedirect, roomcode } = this.state;
 
         if (shouldRedirect) {
-            //return <Redirect to={`room/${roomcode}`}/>;
             return <Redirect to={{
                 pathname: `room/${roomcode}`,
                 state: { username: username }
