@@ -64,3 +64,7 @@ socket.emit("joinroom", function(success){
 ```
 
 The server responds by emitting **updateusers** (to all participants in the room).
+
+### disconnect
+
+When a user disconnects the server emits **updateusers** (to all participants in the room).
