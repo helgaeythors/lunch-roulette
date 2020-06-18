@@ -2,3 +2,52 @@ a {
     color: purple;
     font-weight: bold;
 }
+
+.Room-container {
+    height: 100%;
+    background-color: 	#ebe3b4;
+    display: flex;
+    flex-grow: 1;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.Room-header {
+    flex-direction: row;
+    display: flex;
+    justify-content: space-between;
+    padding: 5px;
+    border-bottom: 1px solid black;
+}
+
+.Room-main {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    justify-content: center;
+    align-items: center;
+}
+
+.Room-form {
+    display: flex;
+    flex-direction: column;
+}
+
+.Room-header-info {
+    flex-grow: 2;
+    color: purple;
+}
+
+/* define differences for mobile */
+@media only screen and (max-width: 600px) {
+    .Room-container {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .Room-main {
+        display: flex;
+        flex-direction: column;
+        align-items: stretch;
+    }
+}
