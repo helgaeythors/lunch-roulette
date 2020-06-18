@@ -15,7 +15,6 @@
 /* define differences for mobile */
 @media only screen and (max-width: 600px) {
     .JoinRoom-container {
-        background-color: #84ffff;
         flex-direction: column;
         align-items: stretch;
     }

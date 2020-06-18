@@ -15,7 +15,6 @@
 /* define differences for mobile */
 @media only screen and (max-width: 600px) {
     .CreateRoom-container {
-        background-color: #b39ddb;
         flex-direction: column;
         align-items: stretch;
     }
