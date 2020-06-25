@@ -39,13 +39,13 @@ yarn start
 ## Screenshots
 
 ### Front page
-![Front page](/screenshots/frontpage.jpg)
+<img src="./screenshots/frontpage.jpg" width="300" alt="Front page">
 
-### Create a room 
-![Create page](/screenshots/createpage.jpg)
+### Create a room
+<img src="./screenshots/createpage.jpg" width="300" alt="Create page">
 
-### Join a room 
-![Join page](/screenshots/joinpage.jpg)
+### Join a room
+<img src="./screenshots/joinpage.jpg" width="300" alt="Join page">
 
 ### Room page
-![Room page](/screenshots/roompage.jpg)
+<img src="./screenshots/roompage.jpg" width="300" alt="Room page">
