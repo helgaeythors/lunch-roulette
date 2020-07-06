@@ -40,7 +40,7 @@ io.on('connection', function (socket) {
         // op the user
         rooms[newRoomCode].ops[socket.username] = socket.username;
         // keep track of the room in the user object
-		users[socket.username].channels[newRoomCode] = newRoomCode;
+		users[socket.username].channels[newRoomCode] = { roomcode: newRoomCode };
         fn(newRoomCode);
         io.sockets.emit('updateusers', newRoomCode, rooms[newRoomCode].users, rooms[newRoomCode].ops);
     });
@@ -54,7 +54,7 @@ io.on('connection', function (socket) {
             // add the user to the room
             rooms[roomcode].addUser(socket.username);
             // keep track of the room in the user object
-			users[socket.username].channels[roomcode] = roomcode;
+            users[socket.username].channels[roomcode] = { roomcode: roomcode };
             fn(true);
             io.sockets.emit('updateusers', roomcode, rooms[roomcode].users, rooms[roomcode].ops);
         }
@@ -65,13 +65,33 @@ io.on('connection', function (socket) {
         // if the client had a username then clean up
         if (socket.username) {
             for (var roomcode in users[socket.username].channels) {
-				// remove the user from users or ops lists in the rooms he's registered in
+                // remove the user from users or ops lists in the rooms he's registered in
 				delete rooms[roomcode].users[socket.username];
 				delete rooms[roomcode].ops[socket.username];
-				io.sockets.emit('updateusers', roomcode, rooms[roomcode].users, rooms[roomcode].ops);
+				io.sockets.emit('updateusers', rooms.roomcode, rooms[roomcode].users, rooms[roomcode].ops);
 			}
 			// remove the user from the global user list
 			delete users[socket.username];
+        }
+    });
+
+    // when a user submits a suggestion
+    socket.on('submitsuggestion', function(roomcode, suggestion, fn) {
+
+        // check if the user had already submitted a suggestion
+        if (users[socket.username].channels[roomcode].suggestion) {
+            fn(false);
+        } else {
+            // add the suggestion to the users object
+            users[socket.username].channels[roomcode].suggestion = suggestion;
+            
+            // add the suggestion to the rooms array of suggestioins
+            rooms[roomcode].suggestions.push(suggestion);
+
+            // emit changes
+            fn(true);
+            io.sockets.emit('updatesuggestions', roomcode, rooms[roomcode].suggestions);
+
         }
     });
 
@@ -83,6 +103,7 @@ class Room {
         this.roomcode = roomcode;
         this.users = {};
         this.ops = {};
+        this.suggestions = [];
         this.addUser = function (user) {
             (user !== undefined) ? this.users[user] = user : console.log("ERROR: error adding user");
         };

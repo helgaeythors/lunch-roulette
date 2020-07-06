@@ -17,6 +17,9 @@ class Room extends React.Component {
             username: this.props.location.state ? this.props.location.state.username : undefined,
             ops: [],
             users: [],
+            suggestion: "",
+            numberOfSuggestions: 0,
+            successSubmitting: false,
         };
     }
     componentDidMount = () => {
@@ -31,17 +34,42 @@ class Room extends React.Component {
             }
         });
 
+        // start listening for 'updatesuggestions' events from the server
+        socket.on('updatesuggestions', (room, suggestions) => {
+            // if the update applies to this room then update the state
+            if (room === roomcode) {
+                this.setState({ numberOfSuggestions: suggestions.length });
+            }
+        });
+
         // TODO: later => fetch information from db here
     }
     componentWillUnmount() {
         const { socket } = this.props;
 
-        // stop listening for 'updateusers' events from the server
+        // stop listening for events from the server
         socket.off("updateusers");
+        socket.off("updatesuggestions");
+    }
+    handleChangeInput = (event) => {
+        const { name, value } = event.target;
+        this.setState({ [name]: value });
+    }
+    handleSubmit = (event) => {
+        event.preventDefault();
+
+        const { roomcode, suggestion } = this.state;
+        const { socket } = this.props;
+
+        socket.emit('submitsuggestion', roomcode, suggestion, (success) => {
+            if (success) {
+                this.setState({ successSubmitting: true });
+            }
+        });
     }
     render() {
         const { classes } = this.props;
-        const { username, roomcode, users, ops } = this.state;
+        const { username, roomcode, users, ops, suggestion, numberOfSuggestions, successSubmitting } = this.state;
 
         // if the user has not set its username
         if (!username) {
@@ -59,28 +87,36 @@ class Room extends React.Component {
                 <div className="Room-header">
                     <p><span className="Room-header-info">{username}</span></p>
                     <p>Code: <span className="Room-header-info">{roomcode}</span></p>
-                    <p>No. users: <span className="Room-header-info">{Object.keys(ops).length + Object.keys(users).length}</span></p>
+                    <p>{numberOfSuggestions}<span className="Room-header-info"> / </span>{Object.keys(ops).length + Object.keys(users).length}</p>
                 </div>
                 <ThemeProvider theme={secondaryTheme}>
                     <div className="Room-main">
-                        <div className="Room-form">
-                            <TextField id="CreateRoom-textfield"
-                                name="suggestion"
-                                label="Enter your suggestion..."
-                                variant="filled"
-                                color="secondary"
-                                className={classes.margin}
-                            />
-                            <Button
-                                variant="contained"
-                                color="secondary"
-                                className={classes.margin}
-                                type="submit"
-                                disabled={false /* TODO: change */}
-                            >
-                                Submit
-                            </Button>
-                        </div>
+
+                        {successSubmitting ? <p>You have submitted!</p> :
+
+                            <form onSubmit={this.handleSubmit}>
+                                <div className="Room-form">
+                                    <TextField id="CreateRoom-textfield"
+                                        name="suggestion"
+                                        label="Enter your suggestion..."
+                                        variant="filled"
+                                        color="secondary"
+                                        className={classes.margin}
+                                        value={suggestion}
+                                        onChange={this.handleChangeInput}
+                                    />
+                                    <Button
+                                        variant="contained"
+                                        color="secondary"
+                                        className={classes.margin}
+                                        type="submit"
+                                        disabled={suggestion === ""}
+                                    >
+                                        Submit
+                                    </Button>
+                                </div>
+                            </form>
+                        }
                     </div>
                 </ThemeProvider>
             </div>

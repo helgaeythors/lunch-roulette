@@ -52,18 +52,41 @@ The client should call this when a user joins a romm.
 
 rommcode: "the room code of the room to join"
 
-A callback function: which returns wether joinin the room was successful or not.
+A callback function: which returns whether joining the room was successful or not.
 Example:
 ```js
-socket.emit("joinroom", function(success){
+socket.emit("joinroom", "roomcode" function(success){
     if (success) {
-        // joinin the room was successful
+        // joining the room was successful
     }
 });
 
 ```
 
 The server responds by emitting **updateusers** (to all participants in the room).
+
+### submitsuggestion
+
+The client should call this when a user submits a suggestion. A user can only submit one suggestion to a particular room.
+
+*Parameters*
+
+roomcode: "the room code the user is submitting the suggestion to"
+
+suggestion: "the user's suggestion"
+
+A callback function: which returns whether submitting the suggestion was successful or not.
+Example:
+```js
+socket.emit("submitsuggestion", "roomcode", "suggestion", function(success){
+    if (success) {
+        // submitting the suggestion was successful
+    }
+});
+
+```
+
+The server emits **updatesuggestions** (to all participants in the room).
 
 ### disconnect
 
