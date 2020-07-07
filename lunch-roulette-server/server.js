@@ -95,6 +95,14 @@ io.on('connection', function (socket) {
         }
     });
 
+    // when an operator decides to show the results
+    socket.on('showresults', function(roomcode) {
+        // find a suggestion to send as the results
+        let results = rooms[roomcode].suggestions[Math.floor(Math.random() * rooms[roomcode].suggestions.length)];
+
+        io.sockets.emit('results', roomcode, results);
+    });
+
 });
 
 // Room class/object

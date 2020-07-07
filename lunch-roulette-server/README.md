@@ -88,6 +88,12 @@ socket.emit("submitsuggestion", "roomcode", "suggestion", function(success){
 
 The server emits **updatesuggestions** (to all participants in the room).
 
+### showresults
+
+The client should call this when a user, that is an operator, wants to show the results.
+
+The server emits **results** (to all participants in the room).
+
 ### disconnect
 
 When a user disconnects the server emits **updateusers** (to all participants in the room).

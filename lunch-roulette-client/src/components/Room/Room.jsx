@@ -1,4 +1,5 @@
 import React from 'react';
+import { Redirect } from 'react-router'
 import { Link } from 'react-router-dom';
 import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
@@ -15,22 +16,29 @@ class Room extends React.Component {
             // fetch the roomcode from the url parameters
             roomcode: props.match.params.roomId,
             username: this.props.location.state ? this.props.location.state.username : undefined,
-            ops: [],
-            users: [],
+            ops: {},
+            users: {},
             suggestion: "",
-            numberOfSuggestions: 0,
+            suggestions: [],
             successSubmitting: false,
+            isOp: false,
+            shouldRedirect: false,
+            results: "",
         };
     }
     componentDidMount = () => {
         const { socket } = this.props;
-        const { roomcode } = this.state;
+        const { roomcode, username } = this.state;
 
         // start listening for 'updateusers' events from the server
         socket.on('updateusers', (room, users, ops) => {
             // if the update applies to this room then update the state
             if (room === roomcode) {
-                this.setState({ users: users, ops: ops });
+                if (ops.hasOwnProperty(username)) {
+                    this.setState({ users: users, ops: ops, isOp: true });
+                } else {
+                    this.setState({ users: users, ops: ops });
+                }
             }
         });
 
@@ -38,7 +46,15 @@ class Room extends React.Component {
         socket.on('updatesuggestions', (room, suggestions) => {
             // if the update applies to this room then update the state
             if (room === roomcode) {
-                this.setState({ numberOfSuggestions: suggestions.length });
+                this.setState({ suggestions: suggestions });
+            }
+        });
+
+        // start listening for 'results' events from the server
+        socket.on('results', (room, results) => {
+            // if the update applies to this room then update the state
+            if (room === roomcode) {
+                this.setState({ shouldRedirect: true, results: results });
             }
         });
 
@@ -50,6 +66,7 @@ class Room extends React.Component {
         // stop listening for events from the server
         socket.off("updateusers");
         socket.off("updatesuggestions");
+        socket.off("results");
     }
     handleChangeInput = (event) => {
         const { name, value } = event.target;
@@ -67,13 +84,40 @@ class Room extends React.Component {
             }
         });
     }
+    handleResults = () => {
+        const { roomcode } = this.state;
+        const { socket } = this.props;
+
+        if (window.confirm("Are you sure you want to get the results?")) {
+            // emit to server to show results
+            socket.emit('showresults', roomcode);
+        }
+    }
     render() {
         const { classes } = this.props;
-        const { username, roomcode, users, ops, suggestion, numberOfSuggestions, successSubmitting } = this.state;
+        const { 
+            username, 
+            roomcode, 
+            users, 
+            ops, 
+            suggestion, 
+            suggestions, 
+            successSubmitting, 
+            isOp,
+            shouldRedirect,
+            results
+        } = this.state;
 
         // if the user has not set its username
         if (!username) {
             return <p>Go to the <Link to="/">front page</Link> to join a room</p>;
+        }
+
+        if (shouldRedirect) {
+            return <Redirect to={{
+                pathname: `${roomcode}/results`,
+                state: { results: results }
+            }} />;
         }
 
         // TODO: look into when starting to work with db
@@ -87,11 +131,10 @@ class Room extends React.Component {
                 <div className="Room-header">
                     <p><span className="Room-header-info">{username}</span></p>
                     <p>Code: <span className="Room-header-info">{roomcode}</span></p>
-                    <p>{numberOfSuggestions}<span className="Room-header-info"> / </span>{Object.keys(ops).length + Object.keys(users).length}</p>
+                    <p>{suggestions.length}<span className="Room-header-info"> / </span>{Object.keys(ops).length + Object.keys(users).length}</p>
                 </div>
                 <ThemeProvider theme={secondaryTheme}>
                     <div className="Room-main">
-
                         {successSubmitting ? <p>You have submitted!</p> :
 
                             <form onSubmit={this.handleSubmit}>
@@ -116,6 +159,19 @@ class Room extends React.Component {
                                     </Button>
                                 </div>
                             </form>
+                        }
+
+                        {isOp ? 
+                            <Button
+                                variant="contained"
+                                className={classes.margin}
+                                disabled={suggestions.length < 1}
+                                onClick={this.handleResults}
+                            >
+                                Show results
+                            </Button> 
+                            :
+                            <></>
                         }
                     </div>
                 </ThemeProvider>
