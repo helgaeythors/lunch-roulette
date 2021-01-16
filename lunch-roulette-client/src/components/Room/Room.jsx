@@ -24,6 +24,7 @@ class Room extends React.Component {
             isOp: false,
             shouldRedirect: false,
             results: "",
+            suggestionErrorMsg: "",
         };
     }
     componentDidMount = () => {
@@ -78,9 +79,11 @@ class Room extends React.Component {
         const { roomcode, suggestion } = this.state;
         const { socket } = this.props;
 
-        socket.emit('submitsuggestion', roomcode, suggestion, (success) => {
+        socket.emit('submitsuggestion', roomcode, suggestion, (success, errMsg) => {
             if (success) {
-                this.setState({ successSubmitting: true });
+                this.setState({ successSubmitting: true, suggestionErrorMsg: "" });
+            } else {
+                this.setState({ suggestionErrorMsg: errMsg })
             }
         });
     }
@@ -105,7 +108,8 @@ class Room extends React.Component {
             successSubmitting, 
             isOp,
             shouldRedirect,
-            results
+            results,
+            suggestionErrorMsg
         } = this.state;
 
         // if the user has not set its username
@@ -147,6 +151,8 @@ class Room extends React.Component {
                                         className={classes.margin}
                                         value={suggestion}
                                         onChange={this.handleChangeInput}
+                                        error={suggestionErrorMsg ? true : false}
+                                        helperText={suggestionErrorMsg ? suggestionErrorMsg : ""}
                                     />
                                     <Button
                                         variant="contained"

@@ -82,7 +82,13 @@ io.on('connection', function (socket) {
         if (users[socket.username].channels[roomcode].suggestion) {
             fn(false);
         } else {
-            // add the suggestion to the users object
+            // check if the suggestion is valid
+            if (suggestion.length > 75) {
+                fn(false, "Kindly keep your suggestion concise");
+                return;
+            }
+
+            // add the suggestion to the users objects
             users[socket.username].channels[roomcode].suggestion = suggestion;
             
             // add the suggestion to the rooms array of suggestioins
@@ -91,7 +97,6 @@ io.on('connection', function (socket) {
             // emit changes
             fn(true);
             io.sockets.emit('updatesuggestions', roomcode, rooms[roomcode].suggestions);
-
         }
     });
 

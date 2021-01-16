@@ -14,7 +14,7 @@ class RoomResults extends React.Component {
         return (
             <div className="RoomResults-container">
                 <p>The results are:</p>
-                <h1>{results}</h1>
+                <p className="RoomResults-result">{results}</p>
             </div>
         );
     }

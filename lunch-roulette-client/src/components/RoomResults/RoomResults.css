@@ -6,3 +6,23 @@
     flex-direction: column;
     justify-content: center;
 }
+
+.RoomResults-result {
+    font-size: 32px;
+    font-weight: bold;
+    overflow-wrap: break-word;
+}
+
+/* define differences for mobile */
+@media only screen and (max-width: 750px) {
+    .RoomResults-result {
+        font-size: 24px;
+    }
+}
+
+/* define differences for small mobile */
+@media only screen and (max-width: 400px) {
+    .RoomResults-result {
+        font-size: 18px;
+    }
+}
