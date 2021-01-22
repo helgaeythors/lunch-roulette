@@ -1,9 +1,11 @@
-const shortid = require('shortid');
+import { customAlphabet } from 'nanoid';
+// with this setup there are ~2 days needed, in order to have a 1% probability of at least one collision
+const nanoid = customAlphabet('0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ_abcdefghijklmnopqrstuvwxyz!@', 6);
 
-const express = require('express'),
-    app = express(),
-    http = require('http').Server(app),
-    io = require('socket.io')(http);
+import express from 'express';
+const app = express();
+const http = require('http').Server(app);
+const io = require('socket.io')(http);
 
 http.listen(8080, function () {
 	console.log('Listening on 8080');
@@ -35,7 +37,7 @@ io.on('connection', function (socket) {
     // when a user creates a room
     socket.on('createroom', function(fn) {
         // create a room
-        let newRoomCode = shortid.generate();
+        let newRoomCode = nanoid();
         rooms[newRoomCode] = new Room(newRoomCode);
         // op the user
         rooms[newRoomCode].ops[socket.username] = socket.username;
